@@ -25,37 +25,33 @@ const urlDatabase = {};
 
 // POST a new short URL
 app.post("/api/shorturl/new", (req, res) => {
-  console.log(req.url);
-  // console.log(req.body); // Log the incoming request body
-  const url = req.body.url;
-  // console.log(req.url);
+  const { url } = req.body;
 
   // Validate the URL
   if (!url) {
-    return res.json({ error: "Invalid URL" });
+    return res.json({ error: "invalid url" });
   }
 
   // Check if the URL starts with http or https
   if (!url.startsWith("http://") && !url.startsWith("https://")) {
-    return res.json({ error: "Invalid URL" });
+    return res.json({ error: "invalid url" });
   }
 
   // Generate a short URL
   const shortUrl = urlShortener(url);
+
   return res.json({ original_url: url, short_url: shortUrl });
 });
 
 // Redirect to the original URL
 app.get("/api/shorturl/:shortUrl", (req, res) => {
-  const shortUrl = req.params.shortUrl;
-  console.log(`Requested Short URL: ${shortUrl}`); // Log the requested short URL
+  const { shortUrl } = req.params;
   const url = urlDatabase[shortUrl];
 
   if (!url) {
-    return res.json({ error: "Invalid URL" });
+    return res.json({ error: "invalid url" });
   }
 
-  console.log(`Redirecting to: ${url}`); // Log the URL being redirected to
   return res.redirect(url);
 });
 
@@ -63,7 +59,7 @@ app.get("/api/shorturl/:shortUrl", (req, res) => {
 function urlShortener(url) {
   const shortUrl = Math.random().toString(36).substring(2, 7);
   urlDatabase[shortUrl] = url; // Store the original URL
-  console.log(`Stored URL: ${url}, Short URL: ${shortUrl}`); // Log the stored URL
+
   return shortUrl;
 }
 
